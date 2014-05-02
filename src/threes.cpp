@@ -274,10 +274,9 @@ void add_tile(std::vector< std::vector<int> > *board,
 /**
  * Play Threes!
  * usage: 
- *   threes /dir/to/input_file_name 1/2/3
+ *   threes /dir/to/input_file_name [1|2]
  *     1: Manual moves (input U, D, L, or R for each turn)
  *     2: Random move selection
- *     3: AI algorithm move selection
  */
 int main(int argc, char *argv[]) {
 
@@ -285,18 +284,22 @@ int main(int argc, char *argv[]) {
                                           std::vector<int>(BOARD_SIZE, EMPTY));
   std::vector<std::string> move_sequence;
   
-  if (argc < 3) {
+  if (argc < 2) {
     std::cout << "Usage: threes /dir/to/input_file_name [1 | 2]\n";
     std::cout << "\t1: Manual moves (input U, D, L, or R for each turn)\n";
     std::cout << "\t2: Random move selection\n";
     std::exit(EXIT_FAILURE);
   }
 
-  int play_type = std::stoi(argv[2]);
+  int play_type = 0;
 
-  if (play_type != 1 || play_type != 2) {
-    std::cout << "Play type should be 1 or 2, omit for AI algorithm\n";
-    std::exit(EXIT_FAILURE);
+  if (argc > 2) {
+    play_type = std::stoi(argv[2]);
+
+    if (!(play_type == 1 || play_type == 2)) {
+      std::cout << "Play type should be 1 or 2, omit for AI algorithm\n";
+      std::exit(EXIT_FAILURE);
+    }
   }
 
   bool manual_play = play_type == 1;
