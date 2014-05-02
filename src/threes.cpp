@@ -273,16 +273,31 @@ void add_tile(std::vector< std::vector<int> > *board,
 
 /**
  * Play Threes!
+ * usage: 
+ *   threes /dir/to/input_file_name 1/2/3
+ *     1: Manual moves (input U, D, L, or R for each turn)
+ *     2: Random move selection
+ *     3: AI algorithm move selection
  */
 int main(int argc, char *argv[]) {
 
   std::vector< std::vector<int> > board (BOARD_SIZE, 
                                           std::vector<int>(BOARD_SIZE, EMPTY));
   std::vector<std::string> move_sequence;
+  
+  if (argc < 3) {
+    std::cout << "Usage: threes /dir/to/input_file_name 1/2/3\n";
+    std::cout << "\t1: Manual moves (input U, D, L, or R for each turn)\n";
+    std::cout << "\t2: Random move selection\n";
+    std::cout << "\t3: AI algorithm move selection\n";
+    std::exit(EXIT_FAILURE);
+  }
 
-  bool manual_play = false;
-  bool random = false;
-  bool greedy = true;
+  int play_type = std::stoi(argv[2]);
+
+  bool manual_play = play_type == 1;
+  bool random = play_type == 2;
+  bool greedy = play_type == 3;
 
   std::map<std::string, Direction> move_parse;
   move_parse.insert(std::pair<std::string, Direction>("U", U));
@@ -298,10 +313,7 @@ int main(int argc, char *argv[]) {
 
   // static const int input_space[] = {1, 2, 3, 6, 12, 24, 48};
 
-  if (argc < 2) {
-    std::cout << "Usage: threes in_file_name\n";
-    std::exit(EXIT_FAILURE);
-  }
+
 
   char *file_name = argv[1];
 
@@ -331,7 +343,7 @@ int main(int argc, char *argv[]) {
       std::cout << "Chose poss[" << rand_move << "]: ";
       std::cout << parse_move.find(m)->second << "\n";
       m = poss_moves[rand_move];
-    } else {
+    } else if (greedy) {
       std::priority_queue<std::pair<int, Direction>, std::vector<std::pair<int, Direction>>, comparator> pq; 
       for (Direction d : poss_moves) {
         std::vector< std::vector<int> > b = board;
