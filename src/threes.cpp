@@ -286,18 +286,21 @@ int main(int argc, char *argv[]) {
   std::vector<std::string> move_sequence;
   
   if (argc < 3) {
-    std::cout << "Usage: threes /dir/to/input_file_name 1/2/3\n";
+    std::cout << "Usage: threes /dir/to/input_file_name [1 | 2]\n";
     std::cout << "\t1: Manual moves (input U, D, L, or R for each turn)\n";
     std::cout << "\t2: Random move selection\n";
-    std::cout << "\t3: AI algorithm move selection\n";
     std::exit(EXIT_FAILURE);
   }
 
   int play_type = std::stoi(argv[2]);
 
+  if (play_type != 1 || play_type != 2) {
+    std::cout << "Play type should be 1 or 2, omit for AI algorithm\n";
+    std::exit(EXIT_FAILURE);
+  }
+
   bool manual_play = play_type == 1;
   bool random = play_type == 2;
-  bool greedy = play_type == 3;
 
   std::map<std::string, Direction> move_parse;
   move_parse.insert(std::pair<std::string, Direction>("U", U));
@@ -343,7 +346,7 @@ int main(int argc, char *argv[]) {
       std::cout << "Chose poss[" << rand_move << "]: ";
       std::cout << parse_move.find(m)->second << "\n";
       m = poss_moves[rand_move];
-    } else if (greedy) {
+    } else {
       std::priority_queue<std::pair<int, Direction>, std::vector<std::pair<int, Direction>>, comparator> pq; 
       for (Direction d : poss_moves) {
         std::vector< std::vector<int> > b = board;
