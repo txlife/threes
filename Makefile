@@ -4,14 +4,15 @@ LDFLAGS = -lstdc++
 
 SRC_DIR = ./src/
 INC_DIR = ./include/
+OBJ_DIR = ./
 
 PROJ = threes
 _SRC = $(PROJ).cpp
 _INCLUDE = $(PROJ).h
 SRC = $(addprefix $(SRC_DIR), $(_SRC))
 INCLUDE = $(addprefix $(INC_DIR), $(_INCLUDE))
-_OBJ = $(addsuffix .o, $(basename $(SRC)))
-OBJ = $(addprefix $(OBJ_DIR), $(_OBJ))
+OBJ = $(addsuffix .o, $(basename $(SRC)))
+# OBJ = $(addprefix $(OBJ_DIR), $(_OBJ))
 
 INC_FLAGS = -I$(INC_DIR)
 

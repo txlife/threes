@@ -12,6 +12,7 @@
 #include <queue>
 #include <stack>
 #include <map>
+#include <unordered_map>
 #include <string> 
 #include <iostream>
 #include <sstream>
@@ -29,6 +30,31 @@
  */
 enum Direction {
   U, D, L, R
+};
+
+class comparator {
+  bool reverse;
+public:
+  comparator(const bool & revparam=false){
+    reverse=revparam;
+  }
+  bool operator() (const std::pair<int,Direction>& m1, const std::pair<int, Direction>& m2) {
+    if (reverse) return m1.first > m2.first;
+    return m1.first < m2.first;
+  }
+};
+
+/** Board data structure **/ 
+typedef std::vector< std::vector<int> > Board;
+
+typedef std::priority_queue<std::pair<int, Direction>, std::vector<std::pair<int, Direction>>, comparator> PQ;
+
+/** Node for DFS tree **/ 
+struct Node {
+  PQ poss_moves;
+  Node *parent;
+  Board b;
+  int depth;
 };
 
 /**
@@ -65,9 +91,16 @@ struct Shift {
 
 };
 
-struct Move {
-  Direction d;
-};
+// struct Move {
+//   Direction d;
+//   int shifts;
+//   bool operator<(const Move &m) const {
+//     if (m.shifts > shifts) return true;
+//     if (score())
+//   }
+// };
+
+
 
 /** function declaration **/ 
 void add_tile(std::vector< std::vector<int> > *, std::vector<Shift> &, int);
@@ -76,5 +109,5 @@ int eval_tiles(int *, int *);
 void print_board(const std::vector< std::vector<int> > &);
 void read_in_file(std::vector< std::vector<int> > *, std::queue<int> *, char *);
 std::vector<Direction> get_possible_moves(const std::vector< std::vector<int> > &, int);
-
+int score(const Board &);
 #endif

@@ -7,25 +7,13 @@
 std::vector<int> input_sequence;
 int tile_num = 0;
 
-class comparator {
-  bool reverse;
-public:
-  comparator(const bool & revparam=false){
-    reverse=revparam;
-  }
-  bool operator() (const std::pair<int,Direction>& m1, const std::pair<int, Direction>& m2) {
-    if (reverse) return m1.first > m2.first;
-    return m1.first < m2.first;
-  }
-};
-
 /**
  * Read in the initial board values and input sequence for game of Threes!
  * @param board          Board container to initialize
  * @param input_sequence Game input sequence of tiles
  * @param file_name      File name for the input file
  */
-void read_in_file(std::vector< std::vector<int> > *board, std::vector<int> *input_sequence, char *file_name) {
+void read_in_file(Board *board, std::vector<int> *input_sequence, char *file_name) {
   std::ifstream in_file;
   in_file.open(file_name);
   if (in_file.is_open()) {
@@ -68,7 +56,7 @@ void read_in_file(std::vector< std::vector<int> > *board, std::vector<int> *inpu
  * Print the board to stdout
  * @param board Board container to be printed
  */
-void print_board(const std::vector< std::vector<int> > &board) {
+void print_board(const Board &board) {
   for (std::vector<int> l : board) {
     for (int c : l)
       std::cout << std::setfill(' ') << std::setw(4) << c << " ";
@@ -99,7 +87,7 @@ int eval_tiles(int *lv, int *v) {
   return 1;
 }
 
-void get_shift_string(std::vector< std::vector<int> > &board, Shift &s) {
+void get_shift_string(Board &board, Shift &s) {
   std::string lexi_string;
   if (s.m == U) {
     for (int row = BOARD_SIZE - 1; row >= 0; row--) {
@@ -137,7 +125,7 @@ int score(const std::vector< std::vector<int> > &board) {
   return score;
 }
 
-std::vector<Direction> get_possible_moves(const std::vector< std::vector<int> > &board, int tile) {
+std::vector<Direction> get_possible_moves(const Board &board, int tile) {
   std::vector<Direction> poss_moves;
 
   std::vector<Direction> move_space;
@@ -155,18 +143,92 @@ std::vector<Direction> get_possible_moves(const std::vector< std::vector<int> > 
   return poss_moves;
 }
 
-int greedy_search(std::vector< std::vector<int> > &board, int depth, int tile) {
-  if (depth == 0) return score(board);
-  std::vector<Direction> poss_moves = get_possible_moves(board, tile);
-  if (poss_moves.size() == 0) return score(board);
-  int best_val = -1;
-  for (Direction m : poss_moves) {
-    std::vector< std::vector<int> > b = board;
-    make_move(&b, m, tile); // possibly add shifts # to eval total
-    best_val = std::max(best_val, greedy_search(b, depth - 1, (tile + 1) % (input_sequence.size() - 1)));
+PQ get_possible_moves_sorted(const Board &board, int tile) {
+  PQ poss_moves;
+
+  std::vector<Direction> move_space;
+  move_space.push_back(U);
+  move_space.push_back(D);
+  move_space.push_back(L);
+  move_space.push_back(R);
+
+  for (Direction d : move_space) {
+    std::vector< std::vector<int> > b_copy = board;
+    std::vector<Shift> shifts = make_move(&b_copy, d, tile);
+    if (shifts.size() > 0) {
+      poss_moves.push(std::pair<int, Direction>(shifts.size(), d));
+    }
   }
-  return best_val;
+
+  return poss_moves;
 }
+
+// std::unordered_map<Node, Node> parents;
+
+// 
+//  heuristic function h(b)
+//  -> greedy local search, choose greatest h(b) until all h(b+1) < h(b), then
+//      go back to h(b - 1) and choose next best h(b)
+// h(b) = #shifts? board eval?
+// 
+// Node {
+//  priorty_queue poss_moves
+//  Node *parent
+// }
+std::vector<Node> dfs(Board &board) {
+  std::vector<Node> parents = std::vector<Node>(input_sequence.size());
+  Node root; 
+  root.b = board;
+  // root.poss_moves = PQ();
+  root.parent = NULL;
+  root.depth = 0;
+
+  // parents[0] = root;
+  int max_score = -1;
+  std::stack<Node> s;
+  s.push(root);
+  while (!s.empty()) {
+    Node top = s.top(); s.pop();
+    parents[top.depth] = top;
+    if (top.depth == input_sequence.size() - 1) {
+      // std::cout << "Score: " << score(top.b) << "\n";
+      max_score = std::max(score(top.b), max_score);
+      continue;
+    }
+
+    PQ poss_moves = get_possible_moves_sorted(top.b,  top.depth + 1);
+
+    if (poss_moves.size() == 0) continue;
+
+    for (int i = 0; i < poss_moves.size(); i++) {
+      Direction d = poss_moves.top().second; poss_moves.pop();
+      Node n;
+      // n.parent 
+      n.b = top.b;
+      n.depth = top.depth + 1;
+      make_move(&n.b, d, top.depth + 1);
+      // print_board(n.b);
+      // std::cout << "top.depth" << top.depth << "\n";
+      s.push(n);
+    }
+
+  }
+  std::cout << max_score << "\n";
+  return parents;
+}
+
+// int greedy_search(std::vector< std::vector<int> > &board, int depth, int tile) {
+//   if (depth == 0) return score(board);
+//   std::vector<Direction> poss_moves = get_possible_moves(board, tile);
+//   if (poss_moves.size() == 0) return score(board);
+//   int best_val = -1;
+//   for (Direction m : poss_moves) {
+//     Board b = board;
+//     make_move(&b, m, tile); // possibly add shifts # to eval total
+//     best_val = std::max(best_val, greedy_search(b, depth - 1, (tile + 1) % (input_sequence.size() - 1)));
+//   }
+//   return best_val;
+// }
 
 /**
  * [make_move description]
@@ -174,7 +236,7 @@ int greedy_search(std::vector< std::vector<int> > &board, int depth, int tile) {
  * @param  move  [description]
  * @return       [description]
  */
-std::vector<Shift> make_move(std::vector< std::vector<int> > *board, Direction move, int tile) {
+std::vector<Shift> make_move(Board *board, Direction move, int tile) {
   std::vector<Shift> shifts;
   switch(move) {
     case U:
@@ -253,7 +315,7 @@ std::vector<Shift> make_move(std::vector< std::vector<int> > *board, Direction m
   return shifts;
 }
 
-void add_tile(std::vector< std::vector<int> > *board, 
+void add_tile(Board *board, 
   std::vector<Shift> &shifts, int tile) {
   std::sort(shifts.begin(), shifts.end());
 
@@ -280,8 +342,7 @@ void add_tile(std::vector< std::vector<int> > *board,
  */
 int main(int argc, char *argv[]) {
 
-  std::vector< std::vector<int> > board (BOARD_SIZE, 
-                                          std::vector<int>(BOARD_SIZE, EMPTY));
+  Board board (BOARD_SIZE, std::vector<int>(BOARD_SIZE, EMPTY));
   std::vector<std::string> move_sequence;
   
   if (argc < 2) {
@@ -350,19 +411,25 @@ int main(int argc, char *argv[]) {
       std::cout << parse_move.find(m)->second << "\n";
       m = poss_moves[rand_move];
     } else {
-      std::priority_queue<std::pair<int, Direction>, std::vector<std::pair<int, Direction>>, comparator> pq; 
-      for (Direction d : poss_moves) {
-        std::vector< std::vector<int> > b = board;
-        make_move(&b, d, tile_num);
-        pq.push(std::pair<int, Direction>(greedy_search(b, 2, tile_num ), d));
+      // PQ pq; 
+      // for (Direction d : poss_moves) {
+      //   std::vector< std::vector<int> > b = board;
+      //   make_move(&b, d, tile_num);
+      //   // pq.push(std::pair<int, Direction>(greedy_search(b, 2, tile_num ), d));
+      // }
+      // std::cout << pq.top().first << "\n";
+      // m = pq.top().second;
+      // while (!pq.empty()) {
+      //   std::cout << "(" << pq.top().first << ", " << parse_move.find(pq.top().second)->second << ") ";
+      //   pq.pop();
+      // }
+      // std::cout << "\n";
+      std::vector<Node> path = dfs(board);
+      for (Node n : path) {
+        print_board(n.b);
+        board = n.b;
       }
-      std::cout << pq.top().first << "\n";
-      m = pq.top().second;
-      while (!pq.empty()) {
-        std::cout << "(" << pq.top().first << ", " << parse_move.find(pq.top().second)->second << ") ";
-        pq.pop();
-      }
-      std::cout << "\n";
+      break;
     }
 
     make_move(&board, m, tile_num);
