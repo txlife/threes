@@ -1,29 +1,25 @@
-CXX = clang++ 
-CXXFLAGS = -std=c++11 -g -O -Wall -Weffc++
-LDFLAGS = -lstdc++
+CXX               = clang++
+CXXFLAGS 					= -std=c++11 -g -O -Wall -Weffc++
+LDFLAGS           = -lstdc++
 
-SRC_DIR = ./src/
-INC_DIR = ./include/
-OBJ_DIR = ./
+SRC_DIR           = ./src/
+INC_DIR           = ./include/
+OBJ_DIR           = ./src/
 
-PROJ = threes
-_SRC = $(PROJ).cpp
-_INCLUDE = $(PROJ).h
-SRC = $(addprefix $(SRC_DIR), $(_SRC))
-INCLUDE = $(addprefix $(INC_DIR), $(_INCLUDE))
-OBJ = $(addsuffix .o, $(basename $(SRC)))
-# OBJ = $(addprefix $(OBJ_DIR), $(_OBJ))
+INC_FLAGS         = -I$(INC_DIR)
 
-INC_FLAGS = -I$(INC_DIR)
+PROJ							= threes
 
-$(PROJ): $(OBJ)
-	$(CXX) $(LDFLAGS) -o $(PROJ) $^
+SRC_FILES 				= threes.cpp threes_AI.cpp threes_Mechanics.cpp threes_IO.cpp
+OBJECTS					  = $(patsubst %.cpp, %.o, $(SRC_FILES))
 
-$(OBJ): $(SRC) $(INCLUDE)
-	$(CXX) -c $(CXXFLAGS) -o $@ $(INC_FLAGS) $<
+all: $(PROJ)
+
+$(PROJ): $(OBJECTS)
+	$(CXX) -o $(PROJ) $(OBJECTS) $(LDLAGS)
+
+%.o: %.cpp 
+	$(CXX) -c $(CXXFLAGS) -o $@ $< $(INC_FLAGS)
 
 clean:
-	rm $(PROJ) *.o
-
-print_vars:
-	echo $(OBJ)
+	rm $(PROJ) $(OBJECTS)
