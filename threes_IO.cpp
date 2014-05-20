@@ -45,8 +45,51 @@ void readInFile(Board *board, std::vector<int> *inputSequence, char *file_name) 
   }
 }
 
+int MOVE_NUM = 0;
+void printSVGFile(const Board &board) {
+  std::string SVG_DIR = "SVGs";
+  std::string SVG_FILE_NAME = SVG_DIR + "/" + std::to_string(MOVE_NUM) + ".svg";
+  std::ofstream outFile;
+  outFile.open(SVG_FILE_NAME);
+  // if (!outFile) {
+  //   std::cout << "Couldn't open: " << SVG_FILE_NAME << "\n";
+  //   exit(EXIT_FAILURE);
+  // }
+  outFile << "<svg xmlns=\"http://www.w3.org/2000/svg\">\n";
+  float size = 100.0;
+  for (int row = 0; row < board.size(); row++) {
+    for (int col = 0; col < board.size(); col++) {
+      int val = board[row][col];
+      std::string rgb = "";
+      switch(val) {
+        case 0: rgb = "rgb(230,230,230);"; break;
+        case 1: rgb = "rgb(0,255,255);"; break;
+        case 2: rgb = "rgb(255,150,255);"; break;
+        default: rgb = "rgb(100,255,100);"; break;
+      }
+      float xPos = float(col + 1) * size;
+      float yPos = float(row + 1) * size;
+      outFile << "<polygon points=\"";
+      outFile << xPos << "," << yPos << " ";
+      outFile << xPos + size << "," << yPos << " ";
+      outFile << xPos + size << "," << yPos + size << " ";
+      outFile << xPos << "," << yPos + size << " ";
+      outFile << xPos << "," << yPos;
+      outFile <<"\" style=\"fill:" << rgb << "stroke:rgb(0,0,0);stroke-width:2\"/>\n";
+
+      outFile << "<text x=\"" << xPos + 40.0 << "\" y=\"" << yPos + 65.0 << "\"";
+      outFile << " font-family=\"Verdana\" font-size=\"40\" fill=\"black\">\n";
+      outFile << val << "</text>\n";
+    }
+  }
+  outFile << "</svg>\n";
+  outFile.close();
+  MOVE_NUM++;
+}
+
 /* Print board to stdout */
 void printBoard(const Board &board) {
+  printSVGFile(board);
   for (std::vector<int> l : board) {
     for (int c : l)
       std::cout << std::setfill(' ') << std::setw(4) << c << " ";

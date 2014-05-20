@@ -163,10 +163,34 @@ std::vector<Shift> makeMove(Board *board, Direction move, int tile) {
 
 /* add tile to board */
 void addTile(Board *board, std::vector<Shift> &shifts, int tile) {
-  std::sort(shifts.begin(), shifts.end());
+  // std::sort(shifts.begin(), shifts.end());
 
-  Direction shift_d = shifts[0].m;
-  int shift_id = shifts[0].id;
+  Shift min_shift = shifts[0];
+
+  for (Shift s : shifts) {
+    if (s.shift_string.length() < min_shift.shift_string.length()) {
+      min_shift = s;
+      continue;
+    }
+
+    int cmp = min_shift.shift_string.compare(s.shift_string);
+    // std::cout << min_shift.shift_string << " comp " << s.shift_string << " = " << cmp << "\n";
+    if (cmp > 0) {  // s.shift_string < min_shift.shift_string
+      min_shift = s;
+    } else if (cmp == 0) { // sort by id, depending on UR/DL
+      if (s.m == U || s.m == R) {
+        if (s.id < min_shift.id)  min_shift = s;
+      } else {
+        if (s.id > min_shift.id) min_shift = s;
+      }
+    }
+  }
+
+  std::cout << min_shift.shift_string << "\n";
+  // Direction shift_d = shifts[0].m;
+  // int shift_id = shifts[0].id;
+  Direction shift_d = min_shift.m;
+  int shift_id = min_shift.id;
 
   if (shift_d == U) {
     (*board)[BOARD_SIZE - 1][shift_id] = tile;

@@ -1,5 +1,19 @@
 #include <threes_AI.h>
 
+void hillClimb(Board &board) {
+  PQ moveQueue;
+  
+}
+/*
+ *
+ * Design Possibilities:
+ *    Select moves based on minimizing number of tiles on the board (consequently
+ *     maximizing tile combinations)
+ *
+ *    Select next move based on maximizing board score (greedy best first search)
+ * 
+ */
+
 // 
 //  heuristic function h(b)
 //  -> greedy local search, choose greatest h(b) until all h(b+1) < h(b), then

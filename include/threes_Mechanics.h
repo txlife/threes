@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include <vector>
-#include <queue>
 #include <set>
 #include <queue>
 #include <stack>
@@ -80,13 +79,12 @@ struct Shift {
   // position relative to move direction (in the case of matching
   // lexicographical score)
   bool operator<(const Shift &a)  const {
-    // if (a.shift_string.length() > shift_string.length()) return true;
+    if (a.shift_string.length() > shift_string.length()) return true;
 
     if (a.shift_string.compare(shift_string) > 0) return true;
-    
     if (a.shift_string.compare(shift_string) == 0) {
       // right most or lowest for Up or Left move, respectively
-      if (m == U || m == L) return a.id > id;
+      if (m == U || m == R) return a.id > id;
       // left most or highest for Down or Right move, respectively
       else return a.id < id;
     }

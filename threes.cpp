@@ -58,6 +58,11 @@ int main(int argc, char *argv[]) {
 
   readInFile(&board, &inputSequence, file_name);
 
+  for (int inp : inputSequence) {
+    std::cout << inp << " ";
+  }
+  std::cout << "\n";
+
   std::cout << "Branching factor of 4, with depth: " << inputSequence.size();
   std::cout << " gives us: O(" << std::pow(4, inputSequence.size()) << ")\n";
   printBoard(board);
@@ -108,16 +113,17 @@ int main(int argc, char *argv[]) {
 
     makeMove(&board, m, tile_num);
     // tile_num = (tile_num + 1) % (inputSequence.size() - 1);
+    move_sequence.push_back(parse_move.find(m)->second);
     tile_num++;
     if (tile_num > inputSequence.size() - 1) {
       std::cout << "Ran out of tiles.\n";
       break;
     }
 
-    move_sequence.push_back(parse_move.find(m)->second);
-
     poss_moves = getPossibleMoves(board, tile_num);
   }
+  if (poss_moves.size() == 0)
+    std::cout << "No possible move (board full)\n";
   
   printBoard(board);
   std::cout << "Game over. Score is: " << score(board) << ". Moves were: \n";
