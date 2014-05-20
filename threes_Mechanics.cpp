@@ -23,27 +23,28 @@ int tileMove(int *lv, int *v) {
   return 1;
 }
 
-/* Set the shift string of Shift s's columns/rows, so that we can sort them */
+/* Set the shift string of Shift s's columns/rows, so that we can sort them 
+ * Not actually strings though, we build a vector of ints to sort with the
+ * < operator specified in Shift struct (threes_Mechanics.h)
+*/
 void setShiftString(Board &board, Shift &s) {
-  std::string lexi_string;
   if (s.m == U) {
     for (int row = BOARD_SIZE - 1; row >= 0; row--) {
-      lexi_string += std::to_string(board[row][s.id]);
+      s.string_vec.push_back(board[row][s.id]);
     }
   } else if (s.m == D) {
     for (int row = 0; row < BOARD_SIZE; row++) {
-      lexi_string += std::to_string(board[row][s.id]);
+      s.string_vec.push_back(board[row][s.id]);
     }
   } else if (s.m == L) {
     for (int col = BOARD_SIZE - 1; col >= 0; col--) {
-      lexi_string += std::to_string(board[s.id][col]);
+      s.string_vec.push_back(board[s.id][col]);
     }
   } else {
     for (int col = 0; col < BOARD_SIZE; col++) {
-      lexi_string += std::to_string(board[s.id][col]);
+      s.string_vec.push_back(board[s.id][col]);
     }
   }
-  s.shift_string = lexi_string;
 }
 
 /* Get legal moves on board given input tile */
@@ -156,41 +157,21 @@ std::vector<Shift> makeMove(Board *board, Direction move, int tile) {
     default:
       break;
   }
-  if (shifts.size() != 0) 
+  
+  if (shifts.size() > 0)
     addTile(board, shifts, inputSequence[tile]);
   return shifts;
 }
 
 /* add tile to board */
 void addTile(Board *board, std::vector<Shift> &shifts, int tile) {
-  // std::sort(shifts.begin(), shifts.end());
+  std::sort(shifts.begin(), shifts.end());
+  // Shift min_shift = getMinShift(shifts);
 
-  Shift min_shift = shifts[0];
-
-  for (Shift s : shifts) {
-    if (s.shift_string.length() < min_shift.shift_string.length()) {
-      min_shift = s;
-      continue;
-    }
-
-    int cmp = min_shift.shift_string.compare(s.shift_string);
-    // std::cout << min_shift.shift_string << " comp " << s.shift_string << " = " << cmp << "\n";
-    if (cmp > 0) {  // s.shift_string < min_shift.shift_string
-      min_shift = s;
-    } else if (cmp == 0) { // sort by id, depending on UR/DL
-      if (s.m == U || s.m == R) {
-        if (s.id < min_shift.id)  min_shift = s;
-      } else {
-        if (s.id > min_shift.id) min_shift = s;
-      }
-    }
-  }
-
-  std::cout << min_shift.shift_string << "\n";
-  // Direction shift_d = shifts[0].m;
-  // int shift_id = shifts[0].id;
-  Direction shift_d = min_shift.m;
-  int shift_id = min_shift.id;
+  Direction shift_d = shifts[0].m;
+  int shift_id = shifts[0].id;
+  // Direction shift_d = min_shift.m;
+  // int shift_id = min_shift.id;
 
   if (shift_d == U) {
     (*board)[BOARD_SIZE - 1][shift_id] = tile;

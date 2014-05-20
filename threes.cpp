@@ -74,7 +74,6 @@ int main(int argc, char *argv[]) {
 
   std::vector<Direction> poss_moves = getPossibleMoves(board, tile_num);
   while (poss_moves.size() > 0) {
-    std::cout << tile_num << " " << inputSequence[tile_num] << " " << inputSequence.size() << "\n";
     printBoard(board);
     std::cout << "Possible moves: ";
     for (Direction d : poss_moves)
@@ -111,8 +110,9 @@ int main(int argc, char *argv[]) {
       break;
     }
 
-    makeMove(&board, m, tile_num);
-    // tile_num = (tile_num + 1) % (inputSequence.size() - 1);
+    std::vector<Shift> shifts = makeMove(&board, m, tile_num);
+
+    std::cout << "Move #" << move_sequence.size() + 1 << " = " << parse_move.find(m)->second << "\n";
     move_sequence.push_back(parse_move.find(m)->second);
     tile_num++;
     if (tile_num > inputSequence.size() - 1) {

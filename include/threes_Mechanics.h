@@ -53,7 +53,7 @@ public:
 /** Board data structure **/ 
 typedef std::vector< std::vector<int> > Board;
 
-typedef std::priority_queue<std::pair<int, Direction>, std::vector<std::pair<int, Direction>>, comparator> PQ;
+typedef std::priority_queue<std::pair<int, Direction>, std::vector<std::pair<int, Direction> >, comparator> PQ;
 
 /** Node for DFS tree **/ 
 struct Node {
@@ -70,28 +70,25 @@ struct Shift {
   int id; // describes the row/col that was shifted (id in [0-3])
   Direction m; // determines if id is row or col (D/U: col, L/R: row)
   // string representation of shift - allows lexicographic sorting of shifts
-  std::string shift_string; 
+  std::vector<int> string_vec;
 
   // constructor
   Shift(Direction mm, int idid) : id(idid), m(mm) {}
 
-  // pretty much lexicographical, with precedence given to most clockwise
-  // position relative to move direction (in the case of matching
-  // lexicographical score)
-  bool operator<(const Shift &a)  const {
-    if (a.shift_string.length() > shift_string.length()) return true;
-
-    if (a.shift_string.compare(shift_string) > 0) return true;
-    if (a.shift_string.compare(shift_string) == 0) {
-      // right most or lowest for Up or Left move, respectively
-      if (m == U || m == R) return a.id > id;
-      // left most or highest for Down or Right move, respectively
-      else return a.id < id;
+  bool operator<(const Shift &a) const {
+    int i = 0;
+    while (i < string_vec.size() && string_vec[i] == a.string_vec[i]) {
+      i++;
     }
-
-    return false;
-
-    // return a.shift_string.compare(shift_string) > 0 ? true : a.shift_string.compare(shift_string) == 0 ? a.id < id : false;
+    if (i == string_vec.size()) {
+      // if move is U or R, we want to select lower IDs 
+      // (left most col, top most row)
+      if (m == U || m == R) return a.id > id;
+      // if move is D or L, we want to select higher IDs 
+      // (right most col, bottom most row)
+      return a.id < id;
+    }
+    return string_vec[i] < a.string_vec[i];
   }
 
 };
@@ -114,7 +111,10 @@ void addTile(std::vector< std::vector<int> > *, std::vector<Shift> &, int);
  */
 int tileMove(int *, int *);
 
-/* Set the shift string of Shift's columns/rows, so that we can sort them */
+/* Set the shift string of Shift s's columns/rows, so that we can sort them 
+ * Not actually strings though, we build a vector of ints to sort with the
+ * < operator specified in Shift struct
+ */
 void setShiftString(Board &, Shift &);
 
 /* Get legal moves on board given input tile */
