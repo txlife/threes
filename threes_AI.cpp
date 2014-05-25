@@ -70,8 +70,60 @@ int greedy_search(Board &board, int depth, int tile) {
   int best_val = -1;
   for (Direction m : poss_moves) {
     Board b = board;
+    std::cout<<"123\n";
     makeMove(&b, m, tile); // possibly add shifts # to eval total
     best_val = std::max(best_val, greedy_search(b, depth - 1, (tile + 1) % (inputSequence.size() - 1)));
   }
   return best_val;
+}
+
+int a_search(start,goal){
+  openset := set containing the initial node;
+  closedset := the empty set;
+  came_from := empty map;
+  g_score[start]=0;
+  h_score[start]=0;
+  f_score[start]=0;
+  while(openset is not empty){
+    x := the node in openset having highest fscore;
+    if(x==goal){
+      return reconstruct_path(came_from,goal);
+    }
+    remove x from openset;
+    add x to closedset;
+    foreach ynode in poss_moves(x){
+      if ynode in closedset{
+        continue;
+      }
+      tentative_g_score := g_score[x] + dist_between(x,y);
+
+      if ynode not in openset{
+        add y to openset;
+        tentative_is_better := true;
+      }
+      else if(tentative_g_score < g_score[y]){
+        tentative_is_better;
+      }
+      else{
+        tentative_is_better := false;
+      }
+      if(tentative_is_better == true){
+        came_from[ynode] := x;
+        g_score[y] := tentative_g_score;
+        h_score[y] := heuristic_estimate_of_distance(y,goal);
+        f_score[y] := g_score[y] + h_score[y];
+      }
+    }
+  }
+  return failure;
+}
+
+Node Function reconstruct_path(came_from, current_node){
+  if came_from[current_node] is set{
+    p = reconstruct_path(came_from,came_from[current_node]);
+    return (p+current_node);
+  }
+  else{
+    return current_node;
+  }
 }
