@@ -80,34 +80,38 @@ int main(int argc, char *argv[]) {
       std::cout << parse_move.find(d)->second << " ";
     std::cout << "\n";
     Direction m;
-    if (manual_play) {
+    if (manual_play) { // user defined input determines moves
       std::cin >> move;
+      while (move_parse.count(move) == 0) {
+        std::cout << "Move \"" << move << "\" invalid, please enter from {U, L, D, R}:\n";
+        std::cin >> move;
+      }
       m = move_parse.find(move)->second;
-    } else if (random) {
+    } else if (random) { // random selection
       int rand_move = (int)(std::rand() % poss_moves.size());
       std::cout << "Chose poss[" << rand_move << "]: ";
       std::cout << parse_move.find(m)->second << "\n";
       m = poss_moves[rand_move];
-    } else {
-      // PQ pq; 
-      // for (Direction d : poss_moves) {
-      //   std::vector< std::vector<int> > b = board;
-      //   makeMove(&b, d, tile_num);
-      //   // pq.push(std::pair<int, Direction>(greedy_search(b, 2, tile_num ), d));
-      // }
-      // std::cout << pq.top().first << "\n";
-      // m = pq.top().second;
-      // while (!pq.empty()) {
-      //   std::cout << "(" << pq.top().first << ", " << parse_move.find(pq.top().second)->second << ") ";
-      //   pq.pop();
-      // }
-      // std::cout << "\n";
-      std::vector<Node> path = dfs(board);
-      for (Node n : path) {
-        printBoard(n.b);
-        board = n.b;
+    } else { // use AI
+      PQ pq; 
+      for (Direction d : poss_moves) {
+        std::vector< std::vector<int> > b = board;
+        makeMove(&b, d, tile_num);
+        pq.push(std::pair<int, Direction>(greedy_search(b, 2, tile_num ), d));
       }
-      break;
+      std::cout << pq.top().first << "\n";
+      m = pq.top().second;
+      while (!pq.empty()) {
+        std::cout << "(" << pq.top().first << ", " << parse_move.find(pq.top().second)->second << ") ";
+        pq.pop();
+      }
+      std::cout << "\n";
+      // std::vector<Node> path = dfs(board);
+      // for (Node n : path) {
+        // printBoard(n.b);
+        // board = n.b;
+      // }
+      // break;
     }
 
     std::vector<Shift> shifts = makeMove(&board, m, tile_num);

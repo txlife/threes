@@ -11,5 +11,6 @@
 
 /* dfs on board for move path */
 std::vector<Node> dfs(Board &);
+int greedy_search(Board &, int, int);
 
 #endif

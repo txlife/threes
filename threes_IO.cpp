@@ -76,10 +76,11 @@ void printSVGFile(const Board &board) {
       outFile << xPos << "," << yPos + size << " ";
       outFile << xPos << "," << yPos;
       outFile <<"\" style=\"fill:" << rgb << "stroke:rgb(0,0,0);stroke-width:2\"/>\n";
-
-      outFile << "<text x=\"" << xPos + 40.0 << "\" y=\"" << yPos + 65.0 << "\"";
-      outFile << " font-family=\"Verdana\" font-size=\"40\" fill=\"black\">\n";
-      outFile << val << "</text>\n";
+      if (val > 0) {
+        outFile << "<text x=\"" << xPos + 40.0 << "\" y=\"" << yPos + 65.0 << "\"";
+        outFile << " font-family=\"Verdana\" font-size=\"40\" fill=\"black\">\n";
+        outFile << val << "</text>\n";
+      }
     }
   }
   outFile << "</svg>\n";
