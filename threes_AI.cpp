@@ -62,45 +62,59 @@ std::vector<Node> dfs(Board &board) {
   std::cout << max_score << "\n";
   return parents;
 }
-
-int greedy_search(Board &board, int depth, int tile) {
+/*
+int greedy_search(Board board, int depth, int tile) {
   if (depth == 0) return score(board);
   std::vector<Direction> poss_moves = getPossibleMoves(board, tile);
   if (poss_moves.size() == 0) return score(board);
+
   int best_val = -1;
   for (Direction m : poss_moves) {
-    Board b = board;
-    makeMove(&b, m, tile); // possibly add shifts # to eval total
-    best_val = std::max(best_val, greedy_search(b, depth - 1, (tile + 1) % (inputSequence.size() - 1)));
+    std::vector< std::vector<int> > b_copy = board;
+    std::vector<Shift> shifts = makeMove(&b_copy, m, tile); // possibly add shifts # to eval total
+    best_val = std::max(best_val, greedy_search(&b_copy, depth - 1, (tile + 1) % (inputSequence.size() - 1)));
   }
   return best_val;
 }
+*/
+/*
+int dls(Board board, int tile){
+  int i = 0;
+  std::vector<Direction> poss_moves = getPossibleMoves(board,tile);
+
+}
 
 int a_search(start,goal){
-  openset := set containing the initial node;
-  closedset := the empty set;
+  std::set<Node1> openset; 
+  openset.insert(start);
+  std::set<Node1> closedset; 
   came_from := empty map;
   g_score[start]=0;
   h_score[start]=0;
   f_score[start]=0;
-  while(openset is not empty){
-    x := the node in openset having highest fscore;
+  while(!openset.empty()){
+    Node1 x;//the node in openset having highest fscore;
     if(x==goal){
       return reconstruct_path(came_from,goal);
     }
-    remove x from openset;
-    add x to closedset;
-    foreach ynode in poss_moves(x){
-      if ynode in closedset{
+    std::vector<Direction> poss_moves = getPossibleMoves(board,tile);
+    openset.earse(x);
+    closedset.add(x);
+    for (Direction m : poss_moves) {
+      Node1 y = Node1(m,x);
+      std::vector< std::vector<int> > b_copy = board;
+      std::vector<Shift> shifts = makeMove(&b_copy, d, tile);
+      //const bool is_in = closedset.find(y) != closedset.end();
+      if (closedset.find(y) != closedset.end()){
         continue;
       }
-      tentative_g_score := g_score[x] + dist_between(x,y);
+      tentative_g_score := x.g_score + score(b_copy);
 
-      if ynode not in openset{
-        add y to openset;
+      if(openset.find(y) == openset.end()){
+        openset.insert(y);
         tentative_is_better := true;
       }
-      else if(tentative_g_score < g_score[y]){
+      else if(tentative_g_score > y.g_score){
         tentative_is_better;
       }
       else{
@@ -125,4 +139,91 @@ Node Function reconstruct_path(came_from, current_node){
   else{
     return current_node;
   }
+}
+*/
+
+
+Direction greedy_search(Board board, int tile){
+  std::vector<Direction> poss_moves = getPossibleMoves(board, tile);
+  int sss = 0;
+  int tile1 = tile + 1;
+  int tile2 = tile1 + 1;
+  int tile3 = tile2 + 1;
+  int tile4 = tile3 + 1;
+  int tile5 = tile4 + 1;
+  Direction ddd;
+  for (Direction m : poss_moves) {
+    std::vector< std::vector<int> > b_copy = board;
+    makeMove(&b_copy, m, tile);
+    std::vector<Direction> poss_moves1 = getPossibleMoves(b_copy, tile1);
+    if(poss_moves1.size()==0){
+        if(score(b_copy)>sss){
+          sss = score(b_copy);
+          ddd = m;
+          printf("Direction : %i \n", ddd);
+        }
+        continue;
+    }
+    for(Direction n : poss_moves1) {
+      std::vector< std::vector<int> > c_copy = b_copy;
+      makeMove(&c_copy, n, tile1);
+      std::vector<Direction> poss_moves2 = getPossibleMoves(c_copy, tile2);
+      if(poss_moves2.size()==0){
+        if(score(c_copy)>sss){
+          sss = score(c_copy);
+          ddd = m;
+          printf("Direction : %i \n", ddd);
+        }
+        continue;
+      }
+      for(Direction l : poss_moves2) {
+        std::vector< std::vector<int> > d_copy = c_copy;
+        makeMove(&d_copy, l, tile2);
+        std::vector<Direction> poss_moves3 = getPossibleMoves(d_copy, tile3);
+        if(poss_moves3.size()==0){
+          if(score(d_copy)>sss){
+            sss = score(d_copy);
+            ddd = m;
+            printf("Direction : %i \n", ddd);
+          }
+          continue;
+        } 
+        for(Direction k : poss_moves3) {
+          std::vector< std::vector<int> > e_copy = d_copy;
+          makeMove(&e_copy, k, tile3);
+          std::vector<Direction> poss_moves4 = getPossibleMoves(e_copy, tile4);
+          if(poss_moves4.size()==0){
+            if(score(e_copy)>sss){
+              sss = score(e_copy);
+              ddd = m;
+              printf("Direction : %i \n", ddd);
+            }
+            continue;
+          } 
+          for(Direction j : poss_moves4) {
+            std::vector< std::vector<int> > f_copy = e_copy;
+            makeMove(&f_copy, j, tile4);
+            std::vector<Direction> poss_moves5 = getPossibleMoves(f_copy, tile5);
+            if(poss_moves5.size()==0){
+              if(score(f_copy)>sss){
+                sss = score(f_copy);
+                ddd = m;
+                printf("Direction : %i \n", ddd);
+              }
+              continue;
+            } 
+            for(Direction o : poss_moves5) {
+              std::vector< std::vector<int> > g_copy = f_copy;
+              makeMove(&g_copy, o, tile5);
+              if(score(g_copy)>sss){
+                sss = score(g_copy);
+                ddd = m;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return ddd;
 }

@@ -63,6 +63,30 @@ struct Node {
   int depth;
 };
 
+struct Node1{
+  int state;
+  int depth;
+  int g_score;
+  int h_score;
+  int f_score;
+  //Node1 Parent;
+};
+/*
+public Node1(int State,Node1 Parent){
+    this.State = State;
+    this.Parent = Parent;
+    if (Parent == null){
+        this.depth = 0;
+    }
+    else{
+      this.depth = Parent.depth + 1;
+    }
+    g_score = 0;
+    h_score = 0;      
+    f_score = 0;
+
+}
+*/
 /**
  * data structure to represent shift.
  */
