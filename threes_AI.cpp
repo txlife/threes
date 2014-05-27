@@ -70,7 +70,6 @@ int greedy_search(Board &board, int depth, int tile) {
   int best_val = -1;
   for (Direction m : poss_moves) {
     Board b = board;
-    std::cout<<"123\n";
     makeMove(&b, m, tile); // possibly add shifts # to eval total
     best_val = std::max(best_val, greedy_search(b, depth - 1, (tile + 1) % (inputSequence.size() - 1)));
   }

@@ -47,14 +47,25 @@ void readInFile(Board *board, std::vector<int> *inputSequence, char *file_name) 
 
 int MOVE_NUM = 0;
 void printSVGFile(const Board &board) {
-  std::string SVG_DIR = "SVGs";
+  std::string SVG_DIR = "./SVGs";
+  mode_t mode = 0777;
+  struct stat st;
+  // create SVG directory if it doesn't exist
+  if (stat(SVG_DIR.c_str(), &st) != 0) { 
+    if (errno == ENOENT) {
+      mkdir(SVG_DIR.c_str(), mode);
+    } else {
+      printf("Something wrong with SVG directory. Please create ./SVGs manually\n");
+      exit(EXIT_FAILURE);
+    }
+  }
   std::string SVG_FILE_NAME = SVG_DIR + "/" + std::to_string(MOVE_NUM) + ".svg";
   std::ofstream outFile;
   outFile.open(SVG_FILE_NAME);
-  // if (!outFile) {
-  //   std::cout << "Couldn't open: " << SVG_FILE_NAME << "\n";
-  //   exit(EXIT_FAILURE);
-  // }
+  if (!outFile) {
+    std::cout << "Couldn't open: " << SVG_FILE_NAME << "\n";
+    exit(EXIT_FAILURE);
+  }
   outFile << "<svg xmlns=\"http://www.w3.org/2000/svg\">\n";
   float size = 100.0;
   for (int row = 0; row < board.size(); row++) {
@@ -76,10 +87,11 @@ void printSVGFile(const Board &board) {
       outFile << xPos << "," << yPos + size << " ";
       outFile << xPos << "," << yPos;
       outFile <<"\" style=\"fill:" << rgb << "stroke:rgb(0,0,0);stroke-width:2\"/>\n";
-
-      outFile << "<text x=\"" << xPos + 40.0 << "\" y=\"" << yPos + 65.0 << "\"";
-      outFile << " font-family=\"Verdana\" font-size=\"40\" fill=\"black\">\n";
-      outFile << val << "</text>\n";
+      if (val > 0) {
+        outFile << "<text x=\"" << xPos + 40.0 << "\" y=\"" << yPos + 65.0 << "\"";
+        outFile << " font-family=\"Verdana\" font-size=\"40\" fill=\"black\">\n";
+        outFile << val << "</text>\n";
+      }
     }
   }
   outFile << "</svg>\n";
