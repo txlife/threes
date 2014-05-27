@@ -151,6 +151,8 @@ Direction greedy_search(Board board, int tile){
   int tile3 = tile2 + 1;
   int tile4 = tile3 + 1;
   int tile5 = tile4 + 1;
+  int tile6 = tile5 + 1;
+  int tile7 = tile6 + 1;
   Direction ddd;
   for (Direction m : poss_moves) {
     std::vector< std::vector<int> > b_copy = board;
@@ -215,9 +217,35 @@ Direction greedy_search(Board board, int tile){
             for(Direction o : poss_moves5) {
               std::vector< std::vector<int> > g_copy = f_copy;
               makeMove(&g_copy, o, tile5);
-              if(score(g_copy)>sss){
-                sss = score(g_copy);
-                ddd = m;
+              std::vector<Direction> poss_moves6 = getPossibleMoves(g_copy, tile6);
+              if(poss_moves6.size()==0){
+                if(score(g_copy)>sss){
+                  sss = score(g_copy);
+                  ddd = m;
+                  printf("Direction : %i \n", ddd);
+                }
+                continue;
+              } 
+              for(Direction p : poss_moves6) {
+                std::vector< std::vector<int> > h_copy = g_copy;
+                makeMove(&h_copy, p, tile6);
+                std::vector<Direction> poss_moves7 = getPossibleMoves(h_copy, tile7);
+                if(poss_moves7.size()==0){
+                  if(score(h_copy)>sss){
+                    sss = score(h_copy);
+                    ddd = m;
+                    printf("Direction : %i \n", ddd);
+                  }
+                  continue;
+                } 
+                for(Direction q : poss_moves7) {
+                  std::vector< std::vector<int> > i_copy = h_copy;
+                  makeMove(&i_copy, q, tile7);
+                  if(score(i_copy)>sss){
+                    sss = score(i_copy);
+                    ddd = m;
+                  }
+                }
               }
             }
           }
