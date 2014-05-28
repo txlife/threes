@@ -399,13 +399,13 @@ Direction greedy_search2(Board board, int tile) {
 
     tile++;
   }
-  std::cout << "Printing:\n";
-  printBoard(maxNode->b);
-  std::cout << "Printing:\n";
-  printBoard(maxNode->parent->b);
-  std::cout << "Root: \n";
-  printBoard(root.b);
-  exit(0);
+  // std::cout << "Printing:\n";
+  // printBoard(maxNode->b);
+  // std::cout << "Printing:\n";
+  // printBoard(maxNode->parent->b);
+  // std::cout << "Root: \n";
+  // printBoard(root.b);
+  // exit(0);
 
   Node *p = maxNode;
 
