@@ -57,10 +57,6 @@ int iterateMoves(Board &board,
         m = poss_moves[rand_move];
         break;
       }
-      case AI:{
-        m = greedy_search(board,tile_num);
-        break;
-      }
       default: {
         printf("Invalid playType used. Please use those defined in threes.h\n");
         exit(EXIT_FAILURE);
@@ -76,7 +72,7 @@ int iterateMoves(Board &board,
     if (tile_num > inputSequence.size() - 1) {
       break;
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
     poss_moves = getPossibleMoves(board, tile_num);
   }
   return poss_moves.size() > 0;
@@ -99,8 +95,7 @@ int help() {
  *     -a: AI move selection
  */
 int main(int argc, char *argv[]) {
-  time_t tstart, tend;
-  tstart=time(0);
+
   Board board (BOARD_SIZE, std::vector<int>(BOARD_SIZE, EMPTY));
   std::vector<std::string> move_sequence;
   char *fileName;
@@ -149,14 +144,10 @@ int main(int argc, char *argv[]) {
     case (RAND):
       endGame = iterateMoves(board, move_sequence, RAND);
       break;
-    // case (AI):
-    //   // not implemented yet, call to AI algorithm goes here,
-    //   // endGame = AI(); or something
-    //   return 1;
-    case AI:{
-        endGame = iterateMoves(board, move_sequence, AI);
-        break;
-      }
+    case (AI):
+      // not implemented yet, call to AI algorithm goes here,
+      // endGame = AI(); or something
+      return 1;
     default:
       return help();
   }
@@ -179,9 +170,6 @@ int main(int argc, char *argv[]) {
   for (std::string m : move_sequence) 
     std::cout << m;
   std::cout << "\n";
-  tend=time(0);
-  std::cout << "Time used: " << difftime(tend, tstart) << "\n";
-  std::cout << "Number of moves:" << move_sequence.size()+1 << "\n";
-  std::cout << "Moves/sec:" << (move_sequence.size()+1)/difftime(tend, tstart) << "\n";
+
   return 0;
 }
