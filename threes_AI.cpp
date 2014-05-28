@@ -353,83 +353,183 @@ int dfs(Board &board, std::vector<std::string> move_sequence, int depthLimit) {
 // }
 // 
 // 
+Direction greedy_search3(Board board, int tile) {
+  // std::vector<Direction> poss_moves = getPossibleMoves(board, tile);
+
+  int depthLim = 6;
+
+  // Node maxNode = root;
+  int maxScore = score(board);
+  std::vector<Direction> originalFrontier = getPossibleMoves(board, tile);
+  Direction maxD = originalFrontier[0];
+  
+  if (originalFrontier.size() == 1) return maxD; // no point doing dfs
+
+  for (Direction od : originalFrontier) {
+    Node root;
+    root.b = board;
+    makeMove(&root.b, od, tile);
+    int tileID = tile;
+    root.score = 0;
+    root.depth = 0;
+    std::stack<Node> ns;
+    ns.push(root);
+    while (!ns.empty()) {
+      tileID++;
+      Node top = ns.top(); ns.pop();
+      if (top.depth == depthLim) {
+        if (maxScore < top.score) {
+          maxScore = top.score;
+          maxD = od;
+          // std::cout << "maxNode board, move is: " << dToStr(maxNode.moveMade) << "\n";
+          // printBoard(maxNode.b);
+        }
+        continue;
+      }
+      else{
+        std::vector<Direction> possMoves = getPossibleMoves(top.b, tileID);
+        // if(possMoves.size()==0){
+        //   if (maxScore < top.score) {
+        //     maxScore = top.score;
+        //     maxD = od;
+        //     // std::cout << "maxNode board, move is: " << dToStr(maxNode.moveMade) << "\n";
+        //     // printBoard(maxNode.b);
+        //   }
+        //   continue;
+        // }
+        for (Direction d : possMoves) {
+          Node n;
+          n.b = top.b;
+          makeMove(&n.b, d, tileID);
+
+          n.moveMade = d;
+          n.depth = top.depth + 1;
+          n.score = score(n.b);
+          n.parent = &top;
+          // n.isRoot = false;
+          ns.push(n);
+        }
+      }
+
+    }
+  }
+  return maxD;
+  // std::cout << "Printing:\n";
+  // printBoard(maxNode->b);
+  // std::cout << "Printing:\n";
+  // printBoard(maxNode->parent->b);
+  // std::cout << "Root: \n";
+  // printBoard(root.b);
+  // exit(0);
+
+  // Node *p = &maxNode;
+
+  // std::stack<Direction> moveStack;
+
+  // // while (!p->isRoot) {
+  // for (int i = 0; i < depthLim; i++) {
+  //   moveStack.push(p->moveMade);
+  //   std::cout << dToStr(p->moveMade) << "\n";
+  //   p = p->parent;
+  // }
+
+  // Direction m;
+  // while (moveStack.size() > 1) {
+  //   m = moveStack.top();
+  //   std::cout << dToStr(moveStack.top());
+  //   moveStack.pop();
+  // }
+  // std::cout << "\n";
+  // return m;
+}
 
 Direction greedy_search2(Board board, int tile) {
   // std::vector<Direction> poss_moves = getPossibleMoves(board, tile);
 
-  int depthLim = 7;
+  int depthLim = 6;
 
-  std::stack<Node> ns;
+  // Node maxNode = root;
+  int maxScore = score(board);
+  std::vector<Direction> originalFrontier = getPossibleMoves(board, tile);
+  Direction maxD = originalFrontier[0];
+  
+  if (originalFrontier.size() == 1) return maxD; // no point doing dfs
 
-  Node root;
-  // root.parent = NULL;
-  root.b = board;
-  // root.moveMade = NULL;
-  root.depth = 0;
-  root.score = score(board);
-  root.isRoot = true;
-  ns.push(root);
+  for (Direction od : originalFrontier) {
+    Node root;
+    root.b = board;
+    makeMove(&root.b, od, tile);
+    int tileID = tile;
+    root.score = score(board);
+    root.depth = 0;
+    std::stack<Node> ns;
+    ns.push(root);
+    while (!ns.empty()) {
+      Node top = ns.top(); ns.pop();
 
-  Node maxNode = root;
-
-  while (!ns.empty()) {
-    Node top = ns.top(); ns.pop();
-
-    std::vector<Direction> possMoves = getPossibleMoves(top.b, tile);
-
-    if (top.depth == depthLim) {
-      if (maxNode.score < top.score) {
-        maxNode = top;
-        printBoard(maxNode.b);
+      std::vector<Direction> possMoves = getPossibleMoves(top.b, tileID);
+      // if(possMoves.size()==0){
+      //   if (maxScore < top.score) {
+      //     maxScore = top.score;
+      //     maxD = od;
+      //     // std::cout << "maxNode board, move is: " << dToStr(maxNode.moveMade) << "\n";
+      //     // printBoard(maxNode.b);
+      //   }
+      //   continue;
+      // }
+      if (top.depth == depthLim) {
+        if (maxScore < top.score) {
+          maxScore = top.score;
+          maxD = od;
+          // std::cout << "maxNode board, move is: " << dToStr(maxNode.moveMade) << "\n";
+          // printBoard(maxNode.b);
+        }
+        continue;
       }
-      continue;
-    }
-    if(possMoves.size()==0){
-      if (maxNode.score < top.score) {
-        maxNode = top;
-        printBoard(maxNode.b);
+      for (Direction d : possMoves) {
+        Node n;
+        n.b = top.b;
+        makeMove(&n.b, d, tileID);
+
+        n.moveMade = d;
+        n.depth = top.depth + 1;
+        n.score = score(n.b);
+        n.parent = &top;
+        // n.isRoot = false;
+        ns.push(n);
       }
-      continue;
+
+      tileID++;
     }
-    for (Direction d : possMoves) {
-      Node n;
-      n.b = top.b;
-      makeMove(&n.b, d, tile);
-
-      n.moveMade = d;
-      n.depth = top.depth + 1;
-      n.score = score(n.b);
-      n.parent = &top;
-      n.isRoot = false;
-      ns.push(n);
-      if (maxNode.score < n.score) {
-        maxNode = top;
-        printBoard(maxNode.b);
-      }
-    }
-
-    tile++;
   }
+  return maxD;
+  // std::cout << "Printing:\n";
+  // printBoard(maxNode->b);
+  // std::cout << "Printing:\n";
+  // printBoard(maxNode->parent->b);
+  // std::cout << "Root: \n";
+  // printBoard(root.b);
+  // exit(0);
 
-  Node *p = &maxNode;
+  // Node *p = &maxNode;
 
-  std::stack<Direction> moveStack;
+  // std::stack<Direction> moveStack;
 
-  // while (!p->isRoot) {
-  for (int i = 0; i < depthLim; i++) {
-    moveStack.push(p->moveMade);
-    std::cout << dToStr(p->moveMade) << "\n";
-    p = p->parent;
-  }
+  // // while (!p->isRoot) {
+  // for (int i = 0; i < depthLim; i++) {
+  //   moveStack.push(p->moveMade);
+  //   std::cout << dToStr(p->moveMade) << "\n";
+  //   p = p->parent;
+  // }
 
-  Direction m;
-  while (moveStack.size() > 1) {
-    m = moveStack.top();
-    std::cout << dToStr(moveStack.top());
-    moveStack.pop();
-  }
-  std::cout << "\n";
-  return m;
+  // Direction m;
+  // while (moveStack.size() > 1) {
+  //   m = moveStack.top();
+  //   std::cout << dToStr(moveStack.top());
+  //   moveStack.pop();
+  // }
+  // std::cout << "\n";
+  // return m;
 }
 
 Direction greedy_search(Board board, int tile){

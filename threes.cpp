@@ -60,7 +60,7 @@ int iterateMoves(Board &board,
         break;
       }
       case AI:{
-        m = greedy_search(board,tile_num);
+        m = greedy_search3(board,tile_num);
         break;
       }
       default: {
@@ -101,7 +101,8 @@ int help() {
  *     -a: AI move selection
  */
 int main(int argc, char *argv[]) {
-
+  time_t tstart, tend;
+  tstart=time(0);
   Board board (BOARD_SIZE, std::vector<int>(BOARD_SIZE, EMPTY));
   std::vector<std::string> move_sequence;
   char *fileName;
@@ -183,6 +184,9 @@ int main(int argc, char *argv[]) {
   for (std::string m : move_sequence) 
     std::cout << m;
   std::cout << "\n";
-
+  tend=time(0);
+  std::cout << "Time used: " << difftime(tend, tstart) << "\n";
+  std::cout << "Number of moves:" << move_sequence.size()+1 << "\n";
+  std::cout << "Moves/sec:" << (move_sequence.size()+1)/difftime(tend, tstart) << "\n";
   return 0;
 }
