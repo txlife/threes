@@ -38,10 +38,12 @@ int iterateMoves(Board &board,
     switch (playType) {
       case MAN: { // user defined input determines moves
         std::cin >> move;
+        if (move == "Q") return -1;
         while (move_parse.count(move) == 0) {
           std::cout << "Move \"" << move 
                     << "\" invalid, please enter from {U, L, D, R}:\n";
           std::cin >> move;
+          if (move == "Q") return -1;
           if (std::cin.eof()) {
             std::cout << "Read EOF for stdin.. Ending game.\n";
             return -1;
@@ -55,6 +57,10 @@ int iterateMoves(Board &board,
         std::cout << "Chose poss[" << rand_move << "]: ";
         std::cout << parse_move.find(m)->second << "\n";
         m = poss_moves[rand_move];
+        break;
+      }
+      case AI:{
+        m = greedy_search2(board,tile_num);
         break;
       }
       default: {
@@ -137,6 +143,7 @@ int main(int argc, char *argv[]) {
   std::srand(std::time(NULL));
   int endGame = -1;
 
+
   switch (playType) { // play the game how user wants to
     case (MAN):
       endGame = iterateMoves(board, move_sequence, MAN);
@@ -147,7 +154,13 @@ int main(int argc, char *argv[]) {
     case (AI):
       // not implemented yet, call to AI algorithm goes here,
       // endGame = AI(); or something
-      return 1;
+      // endGame = dfs(board, move_sequence, 4);
+      // int maxDepth;
+      // endGame = a_star(board, move_sequence, &maxDepth);
+      // endGame = i_aStar(board, move_sequence);
+      endGame = iterateMoves(board, move_sequence, AI);
+      break;
+      // return 1;
     default:
       return help();
   }
