@@ -58,7 +58,7 @@ typedef std::priority_queue<std::pair<int, Direction>, std::vector<std::pair<int
 /** Node for DFS tree **/ 
 struct Node {
   PQ poss_moves;
-  Node *parent;
+  Node *parent = nullptr;
   // the direction moved to get from parent-->node
   Direction moveMade;
   Board b;
