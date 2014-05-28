@@ -357,7 +357,7 @@ int dfs(Board &board, std::vector<std::string> move_sequence, int depthLimit) {
 Direction greedy_search2(Board board, int tile) {
   // std::vector<Direction> poss_moves = getPossibleMoves(board, tile);
 
-  int depthLim = 3;
+  int depthLim = 7;
 
   std::stack<Node> ns;
 
@@ -378,9 +378,16 @@ Direction greedy_search2(Board board, int tile) {
     std::vector<Direction> possMoves = getPossibleMoves(top.b, tile);
 
     if (top.depth == depthLim) {
-      if (maxNode->score < top.score) {
+      if (maxNode.score < top.score) {
         maxNode = top;
-        printBoard(maxNode->b);
+        printBoard(maxNode.b);
+      }
+      continue;
+    }
+    if(possMoves.size()==0){
+      if (maxNode.score < top.score) {
+        maxNode = top;
+        printBoard(maxNode.b);
       }
       continue;
     }
@@ -395,19 +402,16 @@ Direction greedy_search2(Board board, int tile) {
       n.parent = &top;
       n.isRoot = false;
       ns.push(n);
+      if (maxNode.score < n.score) {
+        maxNode = top;
+        printBoard(maxNode.b);
+      }
     }
 
     tile++;
   }
-  // std::cout << "Printing:\n";
-  // printBoard(maxNode->b);
-  // std::cout << "Printing:\n";
-  // printBoard(maxNode->parent->b);
-  // std::cout << "Root: \n";
-  // printBoard(root.b);
-  // exit(0);
 
-  Node *p = maxNode;
+  Node *p = &maxNode;
 
   std::stack<Direction> moveStack;
 

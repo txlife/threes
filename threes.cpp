@@ -60,7 +60,7 @@ int iterateMoves(Board &board,
         break;
       }
       case AI:{
-        m = greedy_search2(board,tile_num);
+        m = greedy_search(board,tile_num);
         break;
       }
       default: {
