@@ -9,7 +9,8 @@
 #include <threes_AI.h>
 
  #include <stdint.h>
-
+#include <chrono>
+#include <thread>
 /* Play type constants */
  #define MAN  0
  #define RAND 1

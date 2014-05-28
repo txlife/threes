@@ -60,7 +60,22 @@ int iterateMoves(Board &board,
         break;
       }
       case AI:{
-        m = greedy_search3(board,tile_num);
+        // m = greedy_search3(board,tile_num);
+
+        int depth = 0;
+        Result best;
+
+        while( depth < 5){
+          Result newBest = minimax(depth, -10000, 10000, board, tile_num, 0 ,true);
+          if (newBest.move == ERROR) {
+            //console.log('BREAKING EARLY');
+            break;
+          } else {
+            best = newBest;
+          }
+          depth++;
+        }
+        m=best.move;
         break;
       }
       default: {

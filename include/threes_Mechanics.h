@@ -35,7 +35,7 @@ extern int tile_num;
  * move direction representation
  */
 enum Direction {
-  U, D, L, R
+  U, D, L, R, ERROR
 };
 
 class comparator {
@@ -73,6 +73,13 @@ struct Node {
   bool isRoot;
 };
 
+struct Result{
+  Direction move;
+  int cutoffs;
+  int tile;
+  int score;
+  Board b;
+};
 class nodeComparator {
   bool reverse;
 public:

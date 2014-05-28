@@ -644,3 +644,80 @@ Direction greedy_search(Board board, int tile){
   }
   return ddd;
 }
+
+/*Ref: https://github.com/ov3y/2048-AI*/
+Result minimax(int depth,int alpha,int beta,Board board,int tileID, int cutoffs,bool playerTurn){
+  int bestScore = 0;
+  Direction bestMove = ERROR;
+  Result result;
+
+  //the maxing player
+  if(playerTurn){
+    // printf("Player Turn\n");
+    bestScore = alpha;
+    std::vector<Direction> poss_moves = getPossibleMoves(board, tileID);
+    for(Direction p : poss_moves){
+      Node n;
+      n.b = board;
+      makeMove(&n.b, p, tileID);
+
+      if(depth == 0){
+        result.move = p;
+        result.score = score(n.b);
+      }
+      else{
+        result = minimax(depth-1, bestScore, beta, n.b, tileID+1, cutoffs, false);
+        cutoffs = result.cutoffs;
+        tileID = result.tile;
+      }
+
+      if(result.score > bestScore){
+        bestScore = result.score;
+        bestMove = p;
+      }
+      if(bestScore > beta){
+        cutoffs++;
+        result.move = bestMove;
+        result.score = beta;
+        result.tile = tileID;
+        result.cutoffs = cutoffs;
+        result.b = board;
+        return result;
+      }
+    }
+  }
+
+  else{
+    // printf("Computer Turn\n");
+    bestScore = beta;
+    std::vector<Direction> poss_moves = getPossibleMoves(board, tileID);
+    for(Direction p : poss_moves){
+      Node n;
+      n.b = board;
+      makeMove(&n.b, p, tileID);
+
+      result = minimax(depth, alpha, bestScore, n.b,tileID+1, cutoffs, true);
+      tileID = result.tile;
+      cutoffs = result.cutoffs;
+
+      if(result.score < bestScore){
+        bestScore = result.score;
+      }
+      if(bestScore < alpha){
+        cutoffs++;
+        result.move = ERROR;
+        result.score = alpha;
+        result.tile = tileID+1;
+        result.cutoffs = cutoffs;
+        result.b = board;
+        return result;
+      }
+    }
+  }
+  result.move = bestMove;
+  result.score = bestScore;
+  result.tile = tileID;
+  result.cutoffs = cutoffs;
+  result.b = board;
+  return result;
+}
