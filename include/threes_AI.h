@@ -11,6 +11,10 @@
 
 /* dfs on board for move path */
 std::vector<Node> dfs(Board &);
-int greedy_search(Board &, int, int);
+Direction greedy_search2(Board, int);
+Direction greedy_search(Board, int);
+// int greedy_search(Board &, int, int);
+int a_star(Board, std::vector<std::string> &, int, int *);
+int i_aStar(Board &, std::vector<std::string> &);
 
 #endif
