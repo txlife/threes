@@ -653,7 +653,6 @@ Result minimax(int depth,int alpha,int beta,Board board,int tileID, int cutoffs,
 
   //the maxing player
   if(playerTurn){
-    // printf("Player Turn\n");
     bestScore = alpha;
     std::vector<Direction> poss_moves = getPossibleMoves(board, tileID);
     for(Direction p : poss_moves){
@@ -666,6 +665,9 @@ Result minimax(int depth,int alpha,int beta,Board board,int tileID, int cutoffs,
         result.score = score(n.b);
       }
       else{
+        // if(tileID+1 > inputSequence.size()){
+        //   continue;
+        // }
         result = minimax(depth-1, bestScore, beta, n.b, tileID+1, cutoffs, false);
         cutoffs = result.cutoffs;
         tileID = result.tile;
@@ -688,7 +690,6 @@ Result minimax(int depth,int alpha,int beta,Board board,int tileID, int cutoffs,
   }
 
   else{
-    // printf("Computer Turn\n");
     bestScore = beta;
     std::vector<Direction> poss_moves = getPossibleMoves(board, tileID);
     for(Direction p : poss_moves){

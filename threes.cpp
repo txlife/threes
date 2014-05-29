@@ -65,7 +65,7 @@ int iterateMoves(Board &board,
         int depth = 0;
         Result best;
 
-        while( depth < 5){
+        while( depth < 3){
           Result newBest = minimax(depth, -10000, 10000, board, tile_num, 0 ,true);
           if (newBest.move == ERROR) {
             //console.log('BREAKING EARLY');
