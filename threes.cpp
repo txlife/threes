@@ -60,22 +60,21 @@ int iterateMoves(Board &board,
         break;
       }
       case AI:{
-        // m = greedy_search3(board,tile_num);
+        m = greedy_search3(board,tile_num);
+        // int depth = 0;
+        // Result best;
 
-        int depth = 0;
-        Result best;
-
-        while( depth < 3){
-          Result newBest = minimax(depth, -10000, 10000, board, tile_num, 0 ,true);
-          if (newBest.move == ERROR) {
-            //console.log('BREAKING EARLY');
-            break;
-          } else {
-            best = newBest;
-          }
-          depth++;
-        }
-        m=best.move;
+        // while( depth < 3){
+        //   Result newBest = minimax(depth, -10000, 10000, board, tile_num, 0 ,true);
+        //   if (newBest.move == ERROR) {
+        //     //console.log('BREAKING EARLY');
+        //     break;
+        //   } else {
+        //     best = newBest;
+        //   }
+        //   depth++;
+        // }
+        // m=best.move;
         break;
       }
       default: {
@@ -194,14 +193,26 @@ int main(int argc, char *argv[]) {
   }
   
   std::cout << "Printing final board...\n";
-  printBoard(board);
+  printBoard(board,true);
   std::cout << "Game over. Score is: " << score(board) << ". Moves were: \n";
   for (std::string m : move_sequence) 
     std::cout << m;
   std::cout << "\n";
   tend=time(0);
   std::cout << "Time used: " << difftime(tend, tstart) << "\n";
-  std::cout << "Number of moves:" << move_sequence.size()+1 << "\n";
-  std::cout << "Moves/sec:" << (move_sequence.size()+1)/difftime(tend, tstart) << "\n";
+  std::cout << "Number of moves:" << move_sequence.size() << "\n";
+  std::cout << "Moves/sec:" << (move_sequence.size())/difftime(tend, tstart) << "\n";
+  std::ofstream outputFile;
+  outputFile.open("output.txt");
+  outputFile << "Score : " << score(board) << "\n";
+  outputFile << "Moves : " << move_sequence.size() << "  Input Size : " << inputSequence.size() << "  Time : " << difftime(tend, tstart) 
+             << "  Moves/sec : " <<  (move_sequence.size())/difftime(tend, tstart) << "\n";
+  for(int i = 1; i < move_sequence.size()+1; i++){
+    outputFile << move_sequence[i];
+    if(i%40==0){
+      outputFile << "\n";
+    }
+  }
   return 0;
 }
+

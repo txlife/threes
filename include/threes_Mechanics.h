@@ -41,7 +41,7 @@ enum Direction {
 class comparator {
   bool reverse;
 public:
-  comparator(const bool & revparam=false){
+  comparator(const bool & revparam=true){
     reverse=revparam;
   }
   bool operator() (const std::pair<int,Direction>& m1, const std::pair<int, Direction>& m2) {
@@ -58,12 +58,13 @@ typedef std::priority_queue<std::pair<int, Direction>, std::vector<std::pair<int
 /** Node for DFS tree **/ 
 struct Node {
   PQ poss_moves;
-  Node *parent;
+  Node *parent = nullptr;
   // the direction moved to get from parent-->node
   Direction moveMade;
   Board b;
   int depth;
-  int f;
+  int tileID;
+  float f;
   int g;
   int h;
   int score;
@@ -73,11 +74,20 @@ struct Node {
   bool isRoot;
 };
 
+struct cell{
+  int x;
+  int y;
+};
+
+struct recur_res{
+  int score;
+  Direction dir;
+};
 struct Result{
   Direction move;
   int cutoffs;
   int tile;
-  int score;
+  float score;
   Board b;
 };
 class nodeComparator {
@@ -164,4 +174,8 @@ int tileScore(int val);
 
 /* Calculate score of board, based on sum of tileScore(tileVal) */
 int score(const Board &);
+
+bool inBounds(int, int);
+int closestPair(Board &, int, int);
+
 #endif

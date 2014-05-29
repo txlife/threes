@@ -19,5 +19,10 @@ Result minimax(int,int,int,Board,int, int,bool);
 // int greedy_search(Board &, int, int);
 int a_star(Board, std::vector<std::string> &, int, int *);
 int i_aStar(Board &, std::vector<std::string> &);
+cell findFarthest(Board,int, int, int);
+float smoothness(Board);
+int emptyCells(Board);
+int maxonBoard(Board);
+// float eval(Node);
 
 #endif

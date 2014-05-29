@@ -1,5 +1,8 @@
 #include <threes_AI.h>
 
+
+
+
 /* Setup move parser maps, mapping Direction to string and vice versa */
 void initMoveParsers(std::map<std::string, Direction> &move_parse,
                     std::map<Direction, std::string> &parse_move) {
@@ -287,6 +290,20 @@ int i_aStar(Board &board, std::vector<std::string> &move_sequence) {
 //  priorty_queue poss_moves
 //  Node *parent
 // }
+ float eval(Node &n) {
+  // int s = n.score;
+  // int nonZero = nonZeroTiles(n.b);
+  int empty = emptyCells(n.b);
+  int max = maxonBoard(n.b);
+  float smooth = smoothness(n.b);
+  int s = std::log(score(n.b))/std::log(3);
+  // std::cout << distanceSum - 2.0*std::log(n.score) << "\n";
+  // float scoreWeight = 2.0;
+  float res = 0.0f;
+  res = empty * 0.1 + max * 0.1 + smooth * 0.3 + s * 1.0;
+  // float 
+  return res;
+}
 int dfs(Board &board, std::vector<std::string> move_sequence, int depthLimit) {
     // Use these maps to convert strings to Direction enums, and vice versa.
 
@@ -356,27 +373,47 @@ int dfs(Board &board, std::vector<std::string> move_sequence, int depthLimit) {
 Direction greedy_search3(Board board, int tile) {
   // std::vector<Direction> poss_moves = getPossibleMoves(board, tile);
 
-  int depthLim = 6;
+  int depthLim = 5;
 
   // Node maxNode = root;
-  int maxScore = score(board);
+  int maxScore = 0;
   std::vector<Direction> originalFrontier = getPossibleMoves(board, tile);
   Direction maxD = originalFrontier[0];
   
-  if (originalFrontier.size() == 1) return maxD; // no point doing dfs
+  // if (originalFrontier.size() == 1) return maxD; // no point doing dfs
 
   for (Direction od : originalFrontier) {
     Node root;
     root.b = board;
     makeMove(&root.b, od, tile);
-    int tileID = tile;
     root.score = 0;
     root.depth = 0;
+    root.tileID = tile;
     std::stack<Node> ns;
     ns.push(root);
     while (!ns.empty()) {
-      tileID++;
       Node top = ns.top(); ns.pop();
+      // printf("Tile number : %d    Tile val : %d\n",top.tileID,inputSequence[top.tileID]);
+      // printf("Level: %i      top score : %i    maxscore: %i\n", top.depth,top.score,maxScore);
+      // //printBoard(top.b);
+      // printf("Tile: %d\n",tileID);
+      // printf("Tile: %d\n",--tileID);
+      if(top.depth > depthLim){
+        // exit(EXIT_FAILURE);
+      }
+      // printf("tile id: %d\n", top.tileID);
+      if(top.score < 0){
+        printf("Top score < 0\n");
+        printf("Level: %i      top score : %i    maxscore: %i   Tile: %d\n", top.depth,top.score,maxScore,top.tileID);
+
+        exit(EXIT_FAILURE);
+      }
+      if(top.tileID>inputSequence.size()){
+        // printf("Level: %i      top score : %i    maxscore: %i   Tile: %d\n", top.depth,top.score,maxScore,tileID);
+        printf("TileID--:%d\n",top.tileID);
+        continue;
+        // exit(EXIT_FAILURE);
+      }
       if (top.depth == depthLim) {
         if (maxScore < top.score) {
           maxScore = top.score;
@@ -387,7 +424,9 @@ Direction greedy_search3(Board board, int tile) {
         continue;
       }
       else{
-        std::vector<Direction> possMoves = getPossibleMoves(top.b, tileID);
+        std::map<int,std::vector<Direction>> mymap;
+        mymap[top.depth] = getPossibleMoves(top.b, top.tileID);
+        // std::vector<Direction> possMoves = getPossibleMoves(top.b, top.tileID);
         // if(possMoves.size()==0){
         //   if (maxScore < top.score) {
         //     maxScore = top.score;
@@ -397,50 +436,30 @@ Direction greedy_search3(Board board, int tile) {
         //   }
         //   continue;
         // }
-        for (Direction d : possMoves) {
+        // for (Direction d : possMoves) {
+          for (Direction d : mymap[top.depth]) {
           Node n;
           n.b = top.b;
-          makeMove(&n.b, d, tileID);
+          makeMove(&n.b, d, top.tileID);
 
           n.moveMade = d;
           n.depth = top.depth + 1;
           n.score = score(n.b);
           n.parent = &top;
+          n.tileID = top.tileID + 1;
+          if (maxScore < top.score) {
+            maxScore = top.score;
+            maxD = od;
+            // std::cout << "maxNode board, move is: " << dToStr(maxNode.moveMade) << "\n";
+            // printBoard(maxNode.b);
+          }
           // n.isRoot = false;
           ns.push(n);
         }
       }
-
     }
   }
   return maxD;
-  // std::cout << "Printing:\n";
-  // printBoard(maxNode->b);
-  // std::cout << "Printing:\n";
-  // printBoard(maxNode->parent->b);
-  // std::cout << "Root: \n";
-  // printBoard(root.b);
-  // exit(0);
-
-  // Node *p = &maxNode;
-
-  // std::stack<Direction> moveStack;
-
-  // // while (!p->isRoot) {
-  // for (int i = 0; i < depthLim; i++) {
-  //   moveStack.push(p->moveMade);
-  //   std::cout << dToStr(p->moveMade) << "\n";
-  //   p = p->parent;
-  // }
-
-  // Direction m;
-  // while (moveStack.size() > 1) {
-  //   m = moveStack.top();
-  //   std::cout << dToStr(moveStack.top());
-  //   moveStack.pop();
-  // }
-  // std::cout << "\n";
-  // return m;
 }
 
 Direction greedy_search2(Board board, int tile) {
@@ -542,6 +561,7 @@ Direction greedy_search(Board board, int tile){
   int tile5 = tile4 + 1;
   int tile6 = tile5 + 1;
   int tile7 = tile6 + 1;
+
   Direction ddd;
   for (Direction m : poss_moves) {
     std::vector< std::vector<int> > b_copy = board;
@@ -634,6 +654,7 @@ Direction greedy_search(Board board, int tile){
                     sss = score(i_copy);
                     ddd = m;
                   }
+                  // exit(EXIT_FAILURE);
                 }
               }
             }
@@ -662,7 +683,7 @@ Result minimax(int depth,int alpha,int beta,Board board,int tileID, int cutoffs,
 
       if(depth == 0){
         result.move = p;
-        result.score = score(n.b);
+        result.score = eval(n);
       }
       else{
         // if(tileID+1 > inputSequence.size()){
@@ -722,3 +743,104 @@ Result minimax(int depth,int alpha,int beta,Board board,int tileID, int cutoffs,
   result.b = board;
   return result;
 }
+
+int maxonBoard(Board board){
+  int max = 0;
+  for(int x = 0; x < 4; x++){
+    for(int y = 0; y < 4; y++){
+      if(board[x][y]!=0 && board[x][y]>max){
+        max = board[x][y];
+      }
+    }
+  }
+  return max;
+}
+
+float smoothness(Board board){
+  float smooth = 0.0f;
+  for(int x = 0; x < 4; x++){
+    for(int y = 0; y < 4; y++){
+      if(board[x][y]!=0){
+        float value = std::log(board[x][y])/std::log(3);
+        for(int u = 0; u < 4; u++){
+          cell far = findFarthest(board,x,y,u);
+          float value1 = std::log(board[far.x][far.y])/std::log(3);
+          smooth = smooth - std::abs(value - value1);
+        }
+      }
+    }
+  }
+  return smooth;
+}
+
+int emptyCells(Board board){
+  int cell = 0;
+  for(int x = 0; x < 4; x++){
+    for(int y = 0; y < 4; y++){
+      if(board[x][y]==0){
+        cell++;
+      }
+    }
+  }
+  return cell;
+}
+cell findFarthest(Board b,int x, int y, int u){
+  int max = 0;
+  cell far;
+  switch (u) {
+    case 0:
+      while(x >= 1){
+        int step = 0;
+        x--;
+        step++;
+        if(b[x][y]!=0 && step > max){
+          max = step;
+          far.x = x;
+          far.y = y;
+          break;
+        }
+      }
+      break;
+    case 1:
+      while(x < 3){
+        int step = 0;
+        x++;
+        step++;
+        if(b[x][y]!=0 && step > max){
+          max = step;
+          far.x = x;
+          far.y = y;
+          break;
+        }
+      }
+      break;
+    case 2:
+      while(y >= 1){
+        int step = 0;
+        y--;
+        step++;
+        if(b[x][y]!=0 && step > max){
+          max = step;
+          far.x = x;
+          far.y = y;
+          break;
+        }
+      }
+      break;
+    case 3:
+      while(x >= 3){
+        int step = 0;
+        y++;
+        step++;
+        if(b[x][y]!=0 && step > max){
+          max = step;
+          far.x = x;
+          far.y = y;
+          break;
+        }
+      }
+      break;
+    }
+  return far;
+}
+

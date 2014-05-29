@@ -167,7 +167,7 @@ std::vector<Shift> makeMove(Board *board, Direction move, int tile) {
 void addTile(Board *board, std::vector<Shift> &shifts, int tile) {
   std::sort(shifts.begin(), shifts.end());
   // Shift min_shift = getMinShift(shifts);
-
+  // std::cout << "Tile : " << tile << "\n";
   Direction shift_d = shifts[0].m;
   int shift_id = shifts[0].id;
   // Direction shift_d = min_shift.m;
